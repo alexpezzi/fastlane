@@ -128,5 +128,20 @@ module Match
       return "InHouse" if type == :enterprise
       return "Unknown"
     end
+    
+    # @return the file name of the provisioning profile
+    def self.profile_name(params: nil, type:, app_identifier: nil)
+      names = [profile_type_name(type), app_identifier]
+      if params[:platform].to_s == :tvos.to_s || params[:platform].to_s == :catalyst.to_s
+        names.push(params[:platform])
+      end
+      return names.join("_").gsub("*", '\*') # this is important, as it shouldn't be a wildcard
+    end
+    
+    # @return the file of the provisioning profile
+    def self.profile_file(params: nil, type:, app_identifier: nil, extension:)
+      name = profile_name(params: params, type: type, app_identifier: app_identifier)
+      return "#{name}#{extension}"
+    end
   end
 end

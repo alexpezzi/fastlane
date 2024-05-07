@@ -262,12 +262,6 @@ module Match
     def fetch_provisioning_profile(params: nil, profile_type:, certificate_id: nil, app_identifier: nil, working_directory: nil)
       prov_type = Match.profile_type_sym(params[:type])
 
-      names = [Match::Generator.profile_type_name(prov_type), app_identifier]
-      if params[:platform].to_s == :tvos.to_s || params[:platform].to_s == :catalyst.to_s
-        names.push(params[:platform])
-      end
-
-      profile_name = names.join("_").gsub("*", '\*') # this is important, as it shouldn't be a wildcard
       base_dir = File.join(prefixed_working_directory, "profiles", prov_type.to_s)
 
       extension = ".mobileprovision"
@@ -275,7 +269,8 @@ module Match
         extension = ".provisionprofile"
       end
 
-      profile_file = "#{profile_name}#{extension}"
+      profile_file = Match::Generator.profile_file(params: params, type: prov_type, app_identifier: app_identifier, extension: extension)
+      
       profiles = Dir[File.join(base_dir, profile_file)]
       if Helper.mac?
         keychain_path = FastlaneCore::Helper.keychain_path(params[:keychain_name]) unless params[:keychain_name].nil?

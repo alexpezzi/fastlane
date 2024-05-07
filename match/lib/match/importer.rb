@@ -112,8 +112,8 @@ module Match
         FileUtils.mkdir_p(output_dir_profiles)
         bundle_id = FastlaneCore::ProvisioningProfile.bundle_id(profile_path)
         profile_extension = FastlaneCore::ProvisioningProfile.profile_extension(profile_path)
-        profile_type_name = Match::Generator.profile_type_name(prov_type)
-        dest_profile_path = File.join(output_dir_profiles, "#{profile_type_name}_#{bundle_id}#{profile_extension}")
+        profile_file = Match::Generator.profile_file(params: params, type: prov_type, app_identifier: bundle_id, extension: profile_extension)
+        dest_profile_path = File.join(output_dir_profiles, profile_file)
         files_to_commit.push(dest_profile_path)
         IO.copy_stream(profile_path, dest_profile_path)
       end
